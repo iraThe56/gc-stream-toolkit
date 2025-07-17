@@ -1,0 +1,14 @@
+# Galaxy simulation parameters
+in=falcon_100k.dat
+out=galaxy_simulation.dat
+accname=miyamoto+nfw
+accpars=0.0,5E10,3.0,0.28;0.0,6E11,20.0
+tstop=100
+eps=0.01
+step=1.0
+kmax=6
+theta=0.6
+Ncrit=6
+logstep=10
+give=mxvpq
+logfile=galaxy_sim.log

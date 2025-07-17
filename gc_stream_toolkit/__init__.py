@@ -7,6 +7,7 @@ using Gala galactic dynamics library.
 
 from .clusters import Cluster, get_cluster, list_available_clusters
 from .imports import setup_imports, quick_imports, inject_imports
+from .nemo_reader import read_nemo, NemoData
 
 __version__ = "0.1.0"
 __author__ = "Ira Evetts"
@@ -18,5 +19,7 @@ __all__ = [
     "list_available_clusters",
     "setup_imports",
     "quick_imports",
-    "inject_imports"
+    "inject_imports",
+    "read_nemo",
+    "NemoData"
 ]

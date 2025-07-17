@@ -15,7 +15,7 @@ CLUSTER_CONFIGS = {
         "name": "NGC 6569",
         "ra": 273.412 * u.degree,
         "dec": -31.827 * u.degree,
-        "distance": 10.5 * u.kpc,
+        "distance": 10.53 * u.kpc,
         "pm_ra_cosdec": -4.125 * u.mas / u.yr,
         "pm_dec": -7.354 * u.mas / u.yr,
         "radial_velocity": -49.82 * u.km / u.s,  # Modified RV for velocity dispersion
