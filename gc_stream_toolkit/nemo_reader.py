@@ -51,7 +51,8 @@ def read_nemo(filename, timestep=0):
     filename : str
         Path to NEMO data file
     timestep : int, optional
-        Which timestep to extract (default: 0)
+        Which timestep to extract (default: 0 = first)
+        Use -1 for last timestep, -2 for second-to-last, etc.
 
     Returns
     -------
@@ -60,9 +61,14 @@ def read_nemo(filename, timestep=0):
 
     Examples
     --------
-    >>> data = read_nemo("simulation.dat")
-    >>> print(data.particle_count)
-    100000
+    >>> # Get first timestep
+    >>> data = read_nemo("simulation.dat", timestep=0)
+    >>> print(f"Time: {data.time}, Particles: {data.particle_count}")
+
+    >>> # Get last timestep
+    >>> data = read_nemo("simulation.dat", timestep=-1)
+
+    >>> # Use with Gala for orbit integration
     >>> orbit = potential.integrate_orbit(data.phase_space_position, ...)
     """
     nemo_binary_location = get_nemo_binary_path()
@@ -131,18 +137,32 @@ def parse_converted_falcon_output(tsf_output, timestep):
     Parameters
     ----------
     tsf_output : str
-        Raw TSF command output
+        Raw TSF command output containing multiple snapshots
     timestep : int
-        Which timestep to extract
+        Which timestep to extract (0 = first, -1 = last)
 
     Returns
     -------
     dict
         Dictionary with positions, velocities, masses, time, particle_count
     """
-    lines = tsf_output.split('\n')
+    # Split into individual snapshots
+    snapshots = split_into_snapshots(tsf_output)
 
-    # Extract basic simulation info
+    if not snapshots:
+        raise ValueError("No snapshots found in TSF output")
+
+    # Select the requested snapshot
+    if timestep < 0:
+        timestep = len(snapshots) + timestep  # Handle negative indexing
+
+    if timestep >= len(snapshots) or timestep < 0:
+        raise ValueError(f"Timestep {timestep} not found. Available: 0 to {len(snapshots)-1}")
+
+    selected_snapshot = snapshots[timestep]
+    lines = selected_snapshot.split('\n')
+
+    # Extract basic simulation info from this snapshot
     particle_count, simulation_time = extract_simulation_info(lines)
 
     # Extract particle data arrays
@@ -157,6 +177,33 @@ def parse_converted_falcon_output(tsf_output, timestep):
         'time': simulation_time,
         'particle_count': particle_count
     }
+
+
+def split_into_snapshots(tsf_output):
+    """
+    Split TSF output into individual snapshot sections.
+
+    Parameters
+    ----------
+    tsf_output : str
+        Complete TSF output with multiple snapshots
+
+    Returns
+    -------
+    list
+        List of snapshot strings
+    """
+    # Split on "set SnapShot" to get individual snapshots
+    parts = tsf_output.split('set SnapShot')
+
+    # First part is just header info, skip it
+    snapshots = []
+    for i, part in enumerate(parts[1:]):  # Skip first empty part
+        # Add the "set SnapShot" back to the beginning
+        snapshot = 'set SnapShot' + part
+        snapshots.append(snapshot)
+
+    return snapshots
 
 
 def extract_simulation_info(lines):

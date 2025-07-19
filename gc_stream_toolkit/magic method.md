@@ -1,4 +1,4 @@
-# nemo fix
+# Nemo fix
 ## Step 1: Install Required Dependencies
 
 bash
