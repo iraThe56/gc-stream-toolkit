@@ -104,9 +104,20 @@ class Cluster:
         # Transform to Galactocentric coordinates
         self.galactocentric = self.skycoord.transform_to(coord.Galactocentric)
 
-        # Create Gala PhaseSpacePosition for orbit integration
-        self.phase_space_position = gala_dynamics.PhaseSpacePosition(self.galactocentric.data)
+        # Create Gala PhaseSpacePosition with explicit unit conversion
+        pos = [
+                  self.galactocentric.x.to(u.kpc).value,
+                  self.galactocentric.y.to(u.kpc).value,
+                  self.galactocentric.z.to(u.kpc).value
+              ] * u.kpc
 
+        vel = [
+                  self.galactocentric.v_x.to(u.km / u.s).value,
+                  self.galactocentric.v_y.to(u.km / u.s).value,
+                  self.galactocentric.v_z.to(u.km / u.s).value
+              ] * u.km / u.s
+
+        self.phase_space_position = gala_dynamics.PhaseSpacePosition(pos=pos, vel=vel)
     @classmethod
     def from_config(cls, cluster_name):
         """

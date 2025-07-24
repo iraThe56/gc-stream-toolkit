@@ -32,8 +32,8 @@ class NemoData:
     def _create_gala_phase_space(self):
         """Convert to Gala PhaseSpacePosition format."""
         # Gala expects shape (3, N) for positions and velocities
-        pos = self.positions.T * u.kpc  # Assuming NEMO units are kpc
-        vel = self.velocities.T * u.km/u.s  # Assuming NEMO velocities are km/s
+        pos = self.positions.T * u.kpc  # NEMO length units = kpc
+        vel = self.velocities.T * u.kpc / u.Myr  # NEMO velocity units = kpc/Myr
 
         return gala_dynamics.PhaseSpacePosition(pos=pos, vel=vel)
 
