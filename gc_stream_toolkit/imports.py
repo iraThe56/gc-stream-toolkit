@@ -9,7 +9,7 @@ import sys
 import warnings
 
 
-def setup_imports(interactive_plots=True, verbose=True):
+def setup_imports(interactive_plots=True, animation_support=True, verbose=True):
     """
     Set up all standard imports for stellar stream analysis.
 
@@ -20,6 +20,8 @@ def setup_imports(interactive_plots=True, verbose=True):
     ----------
     interactive_plots : bool, optional
         Whether to include plotly for interactive plotting (default: True)
+    animation_support : bool, optional
+        Whether to include animation libraries (default: True)
     verbose : bool, optional
         Whether to print import status (default: True)
 
@@ -71,6 +73,17 @@ def setup_imports(interactive_plots=True, verbose=True):
         'mplot3d': mplot3d
     })
 
+    # Animation support (optional)
+    if animation_support:
+        try:
+            from matplotlib.animation import FuncAnimation
+            modules['FuncAnimation'] = FuncAnimation
+            if verbose:
+                print("    ✓ Matplotlib animation support available")
+        except ImportError:
+            if verbose:
+                print("    ⚠ Matplotlib animation not available")
+
     # Interactive plotting (optional)
     if interactive_plots:
         try:
@@ -81,6 +94,22 @@ def setup_imports(interactive_plots=True, verbose=True):
         except ImportError:
             if verbose:
                 print("    ⚠ Plotly not available - interactive plots disabled")
+
+    # =============================================================================
+    # FILE I/O AND DATA HANDLING
+    # =============================================================================
+    if verbose:
+        print("  Importing file I/O libraries...")
+
+    # HDF5 support for simulation data
+    try:
+        import h5py
+        modules['h5py'] = h5py
+        if verbose:
+            print("    ✓ HDF5 support available")
+    except ImportError:
+        if verbose:
+            print("    ⚠ HDF5 not available - simulation file reading disabled")
 
     # =============================================================================
     # ASTRONOMY COORDINATES AND UNITS
@@ -172,6 +201,7 @@ def setup_imports(interactive_plots=True, verbose=True):
         print(f"  Running in Colab: {IN_COLAB}")
         print(f"  Astroquery available: {ASTROQUERY_AVAILABLE}")
         print(f"  Interactive plots: {interactive_plots}")
+        print(f"  Animation support: {animation_support}")
 
     return modules
 
@@ -219,4 +249,4 @@ def inject_imports(globals_dict=None):
     globals_dict.update(imports)
 
     print("All imports injected into global namespace")
-    print("Available: u, np, plt, coord, gp, gd, ms, etc.")
+    print("Available: u, np, plt, coord, gp, gd, ms, h5py, FuncAnimation, etc.")

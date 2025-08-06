@@ -73,7 +73,7 @@ def read_nemo(filename, timestep=0):
     """
     nemo_binary_location = get_nemo_binary_path()
 
-    falcon_converted_data_output = convert_data_using_falcon(nemo_binary_location, filename)
+    falcon_converted_data_output = convert_data_using_TSF(nemo_binary_location, filename)
 
     particle_data = parse_converted_falcon_output(falcon_converted_data_output, timestep)
 
@@ -107,7 +107,7 @@ def get_nemo_binary_path():
     return tsf_path
 
 
-def convert_data_using_falcon(nemo_binary_location, filename):
+def convert_data_using_TSF(nemo_binary_location, filename):
     """
     Run NEMO TSF command to convert binary data to text format.
 
